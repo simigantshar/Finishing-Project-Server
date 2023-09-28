@@ -58,7 +58,7 @@ exports.validateWatch = (reqBody) => {
       .max(800)
       .pattern(/^[A-Z].*$/)
       .required(),
-    year: joi.number().min(1800).max(2023).required(),
+    year: joi.number().min(1800).max(2100).required(),
     category: joi
       .string()
       .min(2)
@@ -79,13 +79,13 @@ exports.validateWatch = (reqBody) => {
       .required(),
     strap: joi
       .string()
-      .min(1)
+      .min(2)
       .max(50)
       .pattern(/^[A-Z].*$/)
       .required(),
     case: joi
       .string()
-      .min(1)
+      .min(2)
       .max(100)
       .pattern(/^[A-Z].*$/)
       .required(),
@@ -95,13 +95,13 @@ exports.validateWatch = (reqBody) => {
       .max(100)
       .pattern(/^[A-Z].*$/)
       .required(),
-    img_url: joi.array(joi.string().min(1).max(10000)).min(1).max(100).required(),
+    img_url: joi.array().required(),
     price: joi.number().min(1).max(1000000).required(),
   });
   return joiSchema.validate(reqBody);
 };
 
-/////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////
 
 async function iterateOverWatches() {
   try {

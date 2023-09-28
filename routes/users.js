@@ -17,17 +17,16 @@ router.get("/", async (req, res) => {
   res.json({ msg: "Users endpoint" });
 });
 
-router.get("/checkToken", auth, async(req,res) => {
+router.get("/checkToken", auth, async (req, res) => {
   return res.json(req.tokenData);
 });
 
-// auth -> קורא קודם לפונקציית מיידל וואר שבודקת אם יש טוקן
 router.get("/userInfo", auth, async (req, res) => {
   try {
     const user = await UserModel.findOne(
       { _id: req.tokenData._id },
       { password: 0 }
-      );
+    );
     res.json(user);
   } catch (err) {
     console.log(err);
@@ -35,59 +34,50 @@ router.get("/userInfo", auth, async (req, res) => {
   }
 });
 
-router.get("/favorites", auth, async(req,res) => {
-  try{
+router.get("/favorites", auth, async (req, res) => {
+  try {
     const user = await UserModel.findById(req.tokenData._id);
-    const favoriteWatches = await WatchModel.find({_id:user.favorites});
-    const favoriteBands = await BandModel.find({_id:user.favorites});
-    const favoriteCufflinks = await CufflinksModel.find({_id:user.favorites});
-    const favoriteProducts = [].concat(favoriteBands, favoriteCufflinks, favoriteWatches);
+    const favoriteWatches = await WatchModel.find({ _id: user.favorites });
+    const favoriteBands = await BandModel.find({ _id: user.favorites });
+    const favoriteCufflinks = await CufflinksModel.find({
+      _id: user.favorites,
+    });
+    const favoriteProducts = [].concat(
+      favoriteBands,
+      favoriteCufflinks,
+      favoriteWatches
+    );
     res.json(favoriteProducts);
-  }
-  catch(err){
+  } catch (err) {
     console.log(err);
-    res.status(500).json({err})
+    res.status(500).json({ err });
   }
 });
 
-// router.get("/favorites", auth, async(req,res) => {
-//   try{
-//     const user = await UserModel.findById(req.tokenData._id);
-//     const favoriteProducts = await WatchModel.find({_id:user.favorites});
-//     res.json(favoriteProducts);
-//   }
-//   catch(err){
-//     console.log(err);
-//     res.status(500).json({err})
-//   }
-// });
-
-router.get("/cart", auth, async(req,res) => {
-  try{
+router.get("/cart", auth, async (req, res) => {
+  try {
     const user = await UserModel.findById(req.tokenData._id);
-    const cartWatches = await WatchModel.find({_id:user.cart});
-    const cartBands = await BandModel.find({_id:user.cart});
-    const cartCufflinks = await CufflinksModel.find({_id:user.cart});
+    const cartWatches = await WatchModel.find({ _id: user.cart });
+    const cartBands = await BandModel.find({ _id: user.cart });
+    const cartCufflinks = await CufflinksModel.find({ _id: user.cart });
     const cartProducts = [].concat(cartWatches, cartBands, cartCufflinks);
     res.json(cartProducts);
-  }
-  catch(err){
+  } catch (err) {
     console.log(err);
-    res.status(502).json({err})
+    res.status(502).json({ err });
   }
-})
+});
 
 // authAdmin -> נותן הרשאה רק למי שהוא אדמין או סופר אדמין
-// router.get("/usersList", authAdmin, async (req, res) => {
-//   try {
-//     const data = await UserModel.find({}, { password: 0 })
-//     res.json(data)
-//   }
-//   catch (err) {
-//     console.log(err);
-//     res.status(502).json({ err })
-//   }
-// })
+router.get("/usersList", authAdmin, async (req, res) => {
+  try {
+    const data = await UserModel.find({}, { password: 0 });
+    res.json(data);
+  } catch (err) {
+    console.log(err);
+    res.status(502).json({ err });
+  }
+});
 
 router.post("/", async (req, res) => {
   const validBody = validateUser(req.body);
@@ -145,16 +135,16 @@ router.post("/login", async (req, res) => {
 });
 
 // router.post("/favorite", auth, async (req, res) => {
-  //   try{
-    //       const userData = req.tokenData;
-    //       console.log({ userData, body: req.body });
-    //       const user = await UserModel.findById(userData._id)
-    //       user.favorites.push(req.body.productId)
-    //       await user.save();
-    //       res.json({ success: true });
-    //   }
-    //   catch(err){
-      //     console.log(err);
+//   try{
+//       const userData = req.tokenData;
+//       console.log({ userData, body: req.body });
+//       const user = await UserModel.findById(userData._id)
+//       user.favorites.push(req.body.productId)
+//       await user.save();
+//       res.json({ success: true });
+//   }
+//   catch(err){
+//     console.log(err);
 //     res.status(502).json({err})
 //   }
 // });
@@ -163,10 +153,9 @@ router.post("/isFavorite", auth, async (req, res) => {
   try {
     const user = await UserModel.findById(req.tokenData._id);
     const isFavs = user.favorites.find((item) => item == req.body.productId);
-    if(isFavs){
+    if (isFavs) {
       return res.json(true);
-    }
-    else{
+    } else {
       return res.json(false);
     }
   } catch (err) {
@@ -175,42 +164,38 @@ router.post("/isFavorite", auth, async (req, res) => {
   }
 });
 
-router.patch("/favorite/:_id", auth, async(req,res) => {
-  try{
-    const {_id} = req.params;
+router.patch("/favorite/:_id", auth, async (req, res) => {
+  try {
+    const { _id } = req.params;
     const watchProduct = await WatchModel.findById(_id);
     const bandProduct = await BandModel.findById(_id);
     const cufflinksProduct = await CufflinksModel.findById(_id);
     let product;
-    if(watchProduct){
+    if (watchProduct) {
       product = watchProduct;
-    }
-    else if(bandProduct){
+    } else if (bandProduct) {
       product = bandProduct;
-    }
-    else{
+    } else {
       product = cufflinksProduct;
     }
-    if(!product){
-      return res.status(400).json({err:"product not found!"});
+    if (!product) {
+      return res.status(400).json({ err: "product not found!" });
     }
     const user = await UserModel.findById(req.tokenData._id);
-    if(user.favorites.find((item) => item == _id)){
+    if (user.favorites.find((item) => item == _id)) {
       user.favorites = user.favorites.filter((item) => item != _id);
       await user.save();
-      return res.json({msg:"removed from favorites!"});
-    }
-    else{
+      return res.json({ msg: "removed from favorites!" });
+    } else {
       user.favorites.push(_id);
       await user.save();
-      return res.json({msg:"added to favorites!"});
+      return res.json({ msg: "added to favorites!" });
     }
-  }
-  catch(err){
+  } catch (err) {
     console.log(err);
-    res.status(502).json({err})
+    res.status(502).json({ err });
   }
-})
+});
 
 // router.patch("/favorite/:_id", auth, async(req,res) => {
 //   try{
@@ -237,39 +222,64 @@ router.patch("/favorite/:_id", auth, async(req,res) => {
 //   }
 // })
 
-router.patch("/addCart/:_id", auth, async(req,res) => {
-  try{
-    const {_id} = req.params;
-    const product = await WatchModel.findById(_id);
-    if(!product){
-      return res.status(400).json({err:"product not found!"});
+router.patch("/addCart/:_id", auth, async (req, res) => {
+  try {
+    const { _id } = req.params;
+    const watchProduct = await WatchModel.findById(_id);
+    console.log(watchProduct);
+    let bandProduct;
+    let cufflinksProduct;
+    if (!watchProduct) {
+      bandProduct = await BandModel.findById(_id);
+      if (!bandProduct) {
+        cufflinksProduct = await CufflinksModel.findById(_id);
+        if (!cufflinksProduct) {
+          return res.status(400).json({ err: "product not found" });
+        }
+      }
     }
-    const user = await UserModel.findById(req.tokenData._id)
-      user.cart.push(_id);
-      await user.save();
-      res.json({msg:"added to cart!"});
-  }
-  catch(err){
-    console.log(err);
-    res.status(502).json({err})
-  }
-})
-
-router.patch("/removeCart/:_id", auth, async(req,res) => {
-  try{
-    const {_id} = req.params;
     const user = await UserModel.findById(req.tokenData._id);
-    if(user.cart.find((item) => item == _id)){
+    user.cart.push(_id);
+    await user.save();
+    res.json({ msg: "added to cart!" });
+  } catch (err) {
+    console.log(err);
+    res.status(502).json({ err });
+  }
+});
+
+// router.patch("/addCart/:_id", auth, async(req,res) => {
+//   try{
+//     const {_id} = req.params;
+//     const watchProduct = await WatchModel.findById(_id);
+//     if(!watchProduct){
+//       return res.status(400).json({err:"product not found!"});
+//     }
+//     const user = await UserModel.findById(req.tokenData._id)
+//       user.cart.push(_id);
+//       await user.save();
+//       res.json({msg:"added to cart!"});
+//   }
+//   catch(err){
+//     console.log(err);
+//     res.status(502).json({err})
+//   }
+// })
+
+router.patch("/removeCart/:_id", auth, async (req, res) => {
+  try {
+    const { _id } = req.params;
+    const user = await UserModel.findById(req.tokenData._id);
+    if (user.cart.find((item) => item == _id)) {
       user.cart = user.cart.filter((item) => item != _id);
       await user.save();
-      res.json({msg:"removed from cart!"});
+      res.json({ msg: "removed from cart!" });
     }
-  }
-  catch(err){
+  } catch (err) {
     console.log(err);
-    res.status(502).json({err})
+    res.status(502).json({ err });
   }
-})
+});
 
 // אדמין יוכל להפוך משתמש לאדמין או למשתמש רגיל
 router.patch("/changeRole/:id/:role", authAdmin, async (req, res) => {

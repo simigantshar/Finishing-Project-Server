@@ -55,14 +55,14 @@ router.post("/", authAdmin, async(req,res) => {
     }
 })
 
-router.put("/:id", authAdmin, async(req,res) => {
+router.put("/:_id", authAdmin, async(req,res) => {
     const validateBody = validateWatch(req.body);
     if(validateBody.error){
         return res.status(400).json(validateBody.error.details);
     }
     try{
-        const id = req.params.id;
-        const updateWatch = await WatchModel.updateOne({_id:id}, req.body);
+        const {_id} = req.params;
+        const updateWatch = await WatchModel.updateOne({_id}, req.body);
         res.json(updateWatch);
     }
     catch(err){
