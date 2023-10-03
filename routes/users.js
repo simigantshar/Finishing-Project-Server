@@ -310,7 +310,7 @@ router.delete("/:id", authAdmin, async (req, res) => {
     const { id } = req.params;
     // אדמין לא יוכל לשנות את עצמו
     if (id == req.tokenData._id) {
-      return res.status(401).json({ err: "you cant delete your self" });
+      return res.status(401).json({ err: "you can't delete your self" });
     }
     // RegExp -> פקודת שלילה חייבת לעבוד עם ביטוי רגולרי
     // כדי לדאוג שלא נוכל להשפיע על סופר אדמין

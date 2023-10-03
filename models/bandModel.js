@@ -41,11 +41,12 @@ exports.validateBand = (reqBody) => {
   return joiSchema.validate(reqBody);
 };
 
-async function iterateOverBands() {
-    const bands = await BandsModel.find();
-    for (const band of bands) {
-      band.type = "band";
-      await band.save();
-    }
-  }
+// async function iterateOverBands() {
+//     const bands = await BandsModel.find();
+//     for (const band of bands) {
+//       band.type = "band";
+//       await band.save();
+//     }
+//   }
+
 //   iterateOverBands();

@@ -40,6 +40,6 @@ exports.authAdmin = (req, res, next) => {
   } catch (err) {
     // אם נסיון הפענוח לא צלח  בגלל שהטוקן לא תקין או לא בתוקף
     // נגיע לכאן
-    res.status(401).json({ err: "token invalid or expired 2222 bbbbb" });
+    res.status(401).json({ err: "token invalid or expired!" });
   }
 };

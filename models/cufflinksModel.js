@@ -29,12 +29,3 @@ exports.validateCufflinks = (reqBody) => {
   });
   return joiSchema.validate(reqBody);
 };
-
-async function iterateOverCufflinks() {
-  const cufflinks = await CufflinkModel.find();
-  for (const cufflink of cufflinks) {
-    cufflink.type = "cufflink";
-    await cufflink.save();
-  }
-}
-//iterateOverCufflinks();

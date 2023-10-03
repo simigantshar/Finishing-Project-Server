@@ -101,19 +101,17 @@ exports.validateWatch = (reqBody) => {
   return joiSchema.validate(reqBody);
 };
 
-////////////////////////////////////////////////////////////////////
-
-async function iterateOverWatches() {
-  try {
-    const watches = await WatchesModel.find();
-    for (const watch of watches) {
-      delete watch.img_url_2;
-      await watch.save()
-    }
-    console.log("Image URLs updated successfully.");
-  } catch (error) {
-    console.error("Error updating image URLs:", error);
-  }
-}
+// async function iterateOverWatches() {
+//   try {
+//     const watches = await WatchesModel.find();
+//     for (const watch of watches) {
+//       delete watch.img_url_2;
+//       await watch.save()
+//     }
+//     console.log("Image URLs updated successfully.");
+//   } catch (error) {
+//     console.error("Error updating image URLs:", error);
+//   }
+// }
 
 // iterateOverWatches();

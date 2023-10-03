@@ -64,13 +64,3 @@ exports.validateLogin = (_reqBody) => {
 
   return joiSchema.validate(_reqBody);
 };
-
-async function iterateOverUsers() {
-  const users = await UserModel.find();
-  for (const user of users) {
-    user.pfp = "";
-    await user.save();
-  }
-}
-
-// iterateOverUsers();
