@@ -11,7 +11,7 @@ const userSchema = new mongoose.Schema(
     password: String,
     pfp: {
       type: String,
-      default: ""
+      default: "",
     },
     // הגדרת רול כסטרינג וערך דיפולטיבי של יוזר
     role: {
@@ -19,6 +19,14 @@ const userSchema = new mongoose.Schema(
       default: "user",
     },
     favorites: {
+      type: [String],
+      default: [],
+    },
+    order_history: {
+      type: [String],
+      default: [],
+    },
+    recent_order: {
       type: [String],
       default: [],
     },
@@ -64,3 +72,18 @@ exports.validateLogin = (_reqBody) => {
 
   return joiSchema.validate(_reqBody);
 };
+
+const placeOrder = async () => {
+  try {
+    const users = await UserModel.find();
+    for (const user of users) {
+      user.recent_order = [];
+      await user.save();
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(502).json({ err });
+  }
+};
+
+// placeOrder();

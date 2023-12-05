@@ -79,6 +79,20 @@ router.get("/usersList", authAdmin, async (req, res) => {
   }
 });
 
+router.get("/recentOrder", auth, async (req, res) => {
+  try {
+    const user = await UserModel.findById(req.tokenData._id);
+    const watches = await WatchModel.find({ _id: user.recent_order });
+    const bands = await BandModel.find({ _id: user.recent_order });
+    const cufflinks = await CufflinksModel.find({ _id: user.recent_order });
+    const products = [].concat(watches, bands, cufflinks);
+    res.json(products);
+  } catch (err) {
+    console.log(err);
+    res.status(502).json({ err });
+  }
+});
+
 router.post("/", async (req, res) => {
   const validBody = validateUser(req.body);
   if (validBody.error) {
@@ -128,6 +142,38 @@ router.post("/login", async (req, res) => {
     const token = createToken(user._id, user.role);
     res.json({ token });
     // לשלוח טוקן
+  } catch (err) {
+    console.log(err);
+    res.status(502).json({ err });
+  }
+});
+
+router.get("/orderHistory", auth, async (req, res) => {
+  try {
+    const user = await UserModel.findById(req.tokenData._id);
+    const watches = await WatchModel.find({ _id: user.order_history });
+    const bands = await BandModel.find({ _id: user.order_history });
+    const cufflinks = await CufflinksModel.find({ _id: user.order_history });
+    const products = [].concat(watches, bands, cufflinks);
+    res.json(products);
+  } catch (err) {
+    console.log(err);
+    res.status(502).json({ err });
+  }
+});
+
+router.patch("/implementOrder", auth, async (req, res) => {
+  try {
+    const user = await UserModel.findById(req.tokenData._id);
+    console.log({ cart: user.cart });
+    if (!user.cart.length) {
+      return res.json({ err: "cart is empty!" });
+    }
+    user.order_history = user.order_history.concat(user.cart);
+    user.recent_order = user.cart;
+    user.cart = [];
+    await user.save();
+    res.json({ msg: "order implemeted successfully!" });
   } catch (err) {
     console.log(err);
     res.status(502).json({ err });
@@ -222,6 +268,7 @@ router.patch("/favorite/:_id", auth, async (req, res) => {
 //   }
 // })
 
+// adds an item to the cart
 router.patch("/addCart/:_id", auth, async (req, res) => {
   try {
     const { _id } = req.params;
@@ -266,6 +313,7 @@ router.patch("/addCart/:_id", auth, async (req, res) => {
 //   }
 // })
 
+// removes an item from the cart
 router.patch("/removeCart/:_id", auth, async (req, res) => {
   try {
     const { _id } = req.params;

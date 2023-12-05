@@ -21,6 +21,7 @@
     "joi": "^17.9.2",
     "jsonwebtoken": "^9.0.0",
     "mongoose": "^7.2.2",
+    "nodemailer": "^6.9.7",
     "nodemon": "^2.0.22",
     "spotify-web-api-node": "^5.0.2",
     "xml2js": "^0.6.0"
